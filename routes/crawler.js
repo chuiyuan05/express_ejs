@@ -26,13 +26,15 @@ router.get('/', function (req, res, next) {
             })
         }
         setInterval(function () {
-            if(count < bookUrllist.length){
+            render_res.render('crawler',
+                { title: 'Express' });
+            /*if(count < bookUrllist.length){
                 console.log('yelp');
                 render_res.render('crawler',{
                     title :'Crawler',
                     booklsit : booklist
                 });
-            }
+            }*/
         },2000);
     })
 });
