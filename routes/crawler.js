@@ -17,7 +17,25 @@ router.get('/', function (req, res, next) {
     
     crawlerLib.getBookListUrl(function (result) {
         bookUrllist = result;
-        for (var i=0; i<bookUrllist.length;i++){
+        var ep = new eventproxy();
+        
+        ep.after('crawler_finished',bookUrllist.length, function(){
+            render_res.render('crawler',{
+                title: 'Crawler Douban'
+                //booklist: booklist
+            })
+        });
+        
+        bookUrllist.forEach(function(bookurl){
+            crawlerLib.getUrlContent(bookurl, function (abook) {
+                var book = crawlerLib.getBookInfo(abook);
+                booklist.push(book);
+                console.log('has finished '+count +' total '+bookUrllist.length);
+                ep.emit('crawler_finished');
+                count++;
+            })    
+        });
+        /*for (var i=0; i<bookUrllist.length;i++){
             crawlerLib.getUrlContent(bookUrllist[i], function (abook) {
                 var book = crawlerLib.getBookInfo(abook);
                 booklist.push(book);
@@ -25,7 +43,7 @@ router.get('/', function (req, res, next) {
                 console.log('has finished:'+count+', total:'+bookUrllist.length);
             })
         }
-        setInterval(function () {
+        //setInterval(function () {
             render_res.render('crawler',
                 { title: 'Express' });
             /*if(count < bookUrllist.length){
@@ -35,7 +53,7 @@ router.get('/', function (req, res, next) {
                     booklsit : booklist
                 });
             }*/
-        },2000);
+        //},200);
     })
 });
 
