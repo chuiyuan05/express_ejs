@@ -21,10 +21,11 @@ router.get('/', function(req, res, next){
             bookUrlList = result;
             var ep = new eventprxy();
             ep.after('crawler_finished',bookUrlList.length, function(){
-                render_res.render('cralwer',{
+                console.log('render crawler');
+                render_res.render('crawler',{
                     title: 'Crawler'
                 });
-            })
+            });
             bookUrlList.forEach(function(bookurl){
                 crawlerLib.getUrlContent(bookurl)
                     .then(function(abook){
@@ -33,7 +34,10 @@ router.get('/', function(req, res, next){
                         booklist.push(book);
                         console.log('has finished '+count+' total '+booklist.length);
                         ep.emit('crawler_finished');
+                        console.log('append to file '+ DOUBAN.resultFile);
+                        crawlerLib.appendFile(DOUBAN.resultFile, crawlerLib.generateStr(book))
                         count++;
+                        console.log('bookUrlList len:'+bookUrlList.length);
                     })
             })
         })
